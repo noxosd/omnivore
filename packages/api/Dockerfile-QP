@@ -65,4 +65,4 @@ COPY --from=builder /app/packages/utils/ /app/packages/utils/
 COPY --from=builder /app/packages/storage/ /app/packages/storage/
 EXPOSE 8080
 
-CMD ["yarn", "workspace", "@omnivore/api", "start"]
+CMD ["yarn", "workspace", "@omnivore/api", "start_queue_processor"]

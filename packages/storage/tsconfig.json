@@ -1,11 +1,8 @@
 {
   "extends": "./../../tsconfig.json",
   "compilerOptions": {
+    "declaration": true,
     "outDir": "build",
-    "rootDir": ".",
-    "strictNullChecks":false,
-    // Generate d.ts files
-    "declaration": true
   },
   "include": ["src", "test"]
 }

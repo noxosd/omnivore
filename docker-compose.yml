@@ -33,29 +33,29 @@ services:
       -c max_replication_slots=10 
       -c hot_standby_feedback=on
 
-  postgres-replica:
-    <<: *postgres-common
-    container_name: "omnivore-postgres-replica"
-    expose:
-      - 5433
-    ports:
-      - "5433:5432"
-    environment:
-      PGUSER: replicator
-      PGPASSWORD: replicator_password
-    command: |
-      bash -c "
-      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres --port=5432
-      do
-      echo 'Waiting for primary to connect...'
-      sleep 1s
-      done
-      echo 'Backup done, starting replica...'
-      chmod 0700 /var/lib/postgresql/data
-      postgres
-      "
-    depends_on:
-      - postgres
+  # postgres-replica:
+  #   <<: *postgres-common
+  #   container_name: "omnivore-postgres-replica"
+  #   expose:
+  #     - 5433
+  #   ports:
+  #     - "5433:5432"
+  #   environment:
+  #     PGUSER: replicator
+  #     PGPASSWORD: replicator_password
+  #   command: |
+  #     bash -c "
+  #     until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=postgres --port=5432
+  #     do
+  #     echo 'Waiting for primary to connect...'
+  #     sleep 1s
+  #     done
+  #     echo 'Backup done, starting replica...'
+  #     chmod 0700 /var/lib/postgresql/data
+  #     postgres
+  #     "
+  #   depends_on:
+  #     - postgres
 
   migrate:
     build:
@@ -82,7 +82,7 @@ services:
       - "4000:8080"
     healthcheck:
       test: ["CMD-SHELL", "nc -z 0.0.0.0 8080 || exit 1"]
-      interval: 15s
+      interval: 15s 
       timeout: 90s
     environment:
       - API_ENV=local
@@ -99,10 +99,47 @@ services:
       - CLIENT_URL=http://localhost:3000
       - GATEWAY_URL=http://localhost:8080/api
       - CONTENT_FETCH_URL=http://content-fetch:8080/?token=some_token
-      - REDIS_URL='redis://redis:6379'
+      - REDIS_URL=redis://redis:6379
+      - MQ_REDIS_URL=redis://redis:6379
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  api-qp:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile-QP
+    container_name: "omnivore-api-qp"
+    ports:
+      - "4001:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 0.0.0.0 8080 || exit 1"]
+      interval: 15s 
+      timeout: 90s
+    environment:
+      - API_ENV=local
+      - PG_HOST=postgres
+      - PG_USER=app_user
+      - PG_PASSWORD=app_pass
+      - PG_DB=omnivore
+      - PG_PORT=5432
+      - PG_POOL_MAX=20
+      - JAEGER_HOST=jaeger
+      - IMAGE_PROXY_SECRET=some-secret
+      - JWT_SECRET=some_secret
+      - SSO_JWT_SECRET=some_sso_secret
+      - CLIENT_URL=http://localhost:3000
+      - GATEWAY_URL=http://localhost:8080/api
+      - CONTENT_FETCH_URL=http://content-fetch:8080/?token=some_token
+      - REDIS_URL=redis://redis:6379
+      - MQ_REDIS_URL=redis://redis:6379
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   web:
     build:
@@ -118,7 +155,7 @@ services:
       - "3000:8080"
     environment:
       - NEXT_PUBLIC_APP_ENV=prod
-      - NEXT_PUBLIC_BASE_URL=http://localhost:3000
+      - NEXT_PUBLIC_BASE_URL=http://localhost:3000 
       - NEXT_PUBLIC_SERVER_BASE_URL=http://localhost:4000
       - NEXT_PUBLIC_HIGHLIGHTS_BASE_URL=http://localhost:3000
     depends_on:
@@ -137,6 +174,7 @@ services:
       - VERIFICATION_TOKEN=some_token
       - REST_BACKEND_ENDPOINT=http://api:8080/api
       - REDIS_URL=redis://redis:6379
+      - MQ_REDIS_URL=redis://redis:6379
     depends_on:
       redis:
         condition: service_healthy
@@ -150,3 +188,16 @@ services:
       - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+
+  minio:
+      image: "quay.io/minio/minio"
+      container_name: "omnivore-minio"
+      command: server /data --console-address ":9001"
+      ports:
+        - 9000:9000
+        - 9001:9001
+      volumes:
+        - /tmp/data:/data
+      environment:
+        - MINIO_ROOT_USER=ROOTNAME
+        - MINIO_ROOT_PASSWORD=CHANGEME123

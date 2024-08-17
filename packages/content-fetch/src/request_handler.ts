@@ -1,4 +1,4 @@
-import { Storage } from '@google-cloud/storage'
+import { Storage } from '@omnivore/storage'
 import { fetchContent } from '@omnivore/puppeteer-parse'
 import { RedisDataSource } from '@omnivore/utils'
 import 'dotenv/config'

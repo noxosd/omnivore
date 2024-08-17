@@ -1,9 +1,9 @@
 {
-  "name": "@omnivore/utils",
+  "name": "@omnivore/storage",
   "version": "1.0.0",
   "description": "Utility functions for Omnivore packages.",
-  "main": "./build/src/index.js",
-  "types": "./build/src/index.d.ts",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "scripts": {
     "test": "yarn mocha -r ts-node/register --config mocha-config.json",
     "lint": "eslint src --ext ts,js,tsx,jsx",
@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "@types/lodash": "4.14.74",
-    "ioredis": "^5.3.2"
+    "ioredis": "^5.3.2",
+    "minio": "8.0.0"
   },
   "volta": {
     "extends": "../../package.json"

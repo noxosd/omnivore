@@ -3532,7 +3532,8 @@ export enum SignupErrorCode {
   InvalidPassword = 'INVALID_PASSWORD',
   InvalidUsername = 'INVALID_USERNAME',
   Unknown = 'UNKNOWN',
-  UserExists = 'USER_EXISTS'
+  UserExists = 'USER_EXISTS',
+  SignupDisabled = 'SIGNUP_DISABLED'
 }
 
 export enum SortBy {

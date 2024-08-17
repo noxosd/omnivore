@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { File, GetSignedUrlConfig, Storage } from '@google-cloud/storage'
+import { File, GetSignedUrlConfig, Storage } from '@omnivore/storage'
 import axios from 'axios'
 import { ContentReaderType } from '../entity/library_item'
 import { env } from '../env'

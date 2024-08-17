@@ -298,12 +298,17 @@ const textToUtterances = ({
   let text = textItems.join('')
   if (!isHtml) {
     // for title
+    let wordCount = wordTokenizer.tokenize(text)
+    let length = 0
+    if (wordCount != null) {
+      length = wordCount.length
+    }
     return [
       {
         idx,
         text,
         wordOffset,
-        wordCount: wordTokenizer.tokenize(text).length,
+        wordCount: length,
         voice,
       },
     ]

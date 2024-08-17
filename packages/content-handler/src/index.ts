@@ -34,7 +34,7 @@ import { StackOverflowHandler } from './websites/stack-overflow-handler'
 import { TDotCoHandler } from './websites/t-dot-co-handler'
 import { TheAtlanticHandler } from './websites/the-atlantic-handler'
 import { TwitterHandler } from './websites/twitter-handler'
-import { WeixinQqHandler } from './websites/weixin-qq-handler'
+// import { WeixinQqHandler } from './websites/weixin-qq-handler'
 import { WikipediaHandler } from './websites/wikipedia-handler'
 import { YoutubeHandler } from './websites/youtube-handler'
 import { ZhihuHandler } from './websites/zhihu-handler'
@@ -80,7 +80,7 @@ const contentHandlers: ContentHandler[] = [
   new StackOverflowHandler(),
   new EnergyWorldHandler(),
   new PipedVideoHandler(),
-  new WeixinQqHandler(),
+  // new WeixinQqHandler(),
   new ZhihuHandler(),
   new TwitterHandler(),
   new TikTokHandler(),

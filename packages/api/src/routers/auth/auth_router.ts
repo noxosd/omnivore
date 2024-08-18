@@ -95,53 +95,53 @@ export const isValidSignupRequest = (obj: any): obj is SignupRequest => {
 export function authRouter() {
   const router = express.Router()
 
-  router.post('/apple-redirect', curriedAuthHandler('APPLE', false))
-  router.post('/gauth-redirect', curriedAuthHandler('GOOGLE', false))
-  router.post(
-    '/vercel/apple-redirect',
-    curriedAuthHandler('APPLE', false, true)
-  )
-  router.post(
-    '/vercel/gauth-redirect',
-    curriedAuthHandler('GOOGLE', false, true)
-  )
-  router.post(
-    '/apple-redirect-localhost',
-    curriedAuthHandler('APPLE', true, true)
-  )
-  router.post(
-    '/gauth-redirect-localhost',
-    curriedAuthHandler('GOOGLE', true, true)
-  )
+  // router.post('/apple-redirect', curriedAuthHandler('APPLE', false))
+  // router.post('/gauth-redirect', curriedAuthHandler('GOOGLE', false))
+  // router.post(
+  //   '/vercel/apple-redirect',
+  //   curriedAuthHandler('APPLE', false, true)
+  // )
+  // router.post(
+  //   '/vercel/gauth-redirect',
+  //   curriedAuthHandler('GOOGLE', false, true)
+  // )
+  // router.post(
+  //   '/apple-redirect-localhost',
+  //   curriedAuthHandler('APPLE', true, true)
+  // )
+  // router.post(
+  //   '/gauth-redirect-localhost',
+  //   curriedAuthHandler('GOOGLE', true, true)
+  // )
 
-  router.options(
-    '/create-account',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
-  router.post(
-    '/create-account',
-    hourlyLimiter,
-    cors<express.Request>(corsConfig),
-    async (req, res) => {
-      const { name, bio, username } = req.body
+  // router.options(
+  //   '/create-account',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
+  // router.post(
+  //   '/create-account',
+  //   hourlyLimiter,
+  //   cors<express.Request>(corsConfig),
+  //   async (req, res) => {
+  //     const { name, bio, username } = req.body
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const token = req.cookies?.pendingUserAuth as string | undefined
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  //     const token = req.cookies?.pendingUserAuth as string | undefined
 
-      const payload = await createMobileAccountCreationResponse(token, {
-        name,
-        username,
-        bio,
-      })
+  //     const payload = await createMobileAccountCreationResponse(token, {
+  //       name,
+  //       username,
+  //       bio,
+  //     })
 
-      if (payload.json.authToken) {
-        res.cookie('auth', payload.json.authToken, cookieParams)
-        res.clearCookie('pendingUserAuth')
-      }
+  //     if (payload.json.authToken) {
+  //       res.cookie('auth', payload.json.authToken, cookieParams)
+  //       res.clearCookie('pendingUserAuth')
+  //     }
 
-      res.status(payload.statusCode).json({})
-    }
-  )
+  //     res.status(payload.statusCode).json({})
+  //   }
+  // )
 
   function curriedAuthHandler(
     provider: AuthProvider,
@@ -176,175 +176,175 @@ export function authRouter() {
       return res.redirect(redirectURL)
     }
 
-    if (provider === 'APPLE') {
-      const { id_token, user } = req.body
-      const authResponse = await handleAppleWebAuth(
-        id_token,
-        user,
-        isLocal,
-        isVercel
-      )
-      completion(
-        res,
-        authResponse.redirectURL,
-        authResponse.authToken,
-        authResponse.pendingUserToken
-      )
-      return
-    }
+    // if (provider === 'APPLE') {
+    //   const { id_token, user } = req.body
+    //   const authResponse = await handleAppleWebAuth(
+    //     id_token,
+    //     user,
+    //     isLocal,
+    //     isVercel
+    //   )
+    //   completion(
+    //     res,
+    //     authResponse.redirectURL,
+    //     authResponse.authToken,
+    //     authResponse.pendingUserToken
+    //   )
+    //   return
+    // }
 
-    if (provider === 'GOOGLE') {
-      const { credential } = req.body
-      const authResponse = await handleGoogleWebAuth(
-        credential,
-        isLocal,
-        isVercel
-      )
-      completion(
-        res,
-        authResponse.redirectURL,
-        authResponse.authToken,
-        authResponse.pendingUserAuth
-      )
-      return
-    }
+    // if (provider === 'GOOGLE') {
+    //   const { credential } = req.body
+    //   const authResponse = await handleGoogleWebAuth(
+    //     credential,
+    //     isLocal,
+    //     isVercel
+    //   )
+    //   completion(
+    //     res,
+    //     authResponse.redirectURL,
+    //     authResponse.authToken,
+    //     authResponse.pendingUserAuth
+    //   )
+    //   return
+    // }
 
     res.status(500).send('Unknown provider')
   }
 
-  router.options(
-    '/verify',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
-  router.get('/verify', cors<express.Request>(corsConfig), async (req, res) => {
-    // return 'AUTHENTICATED', 'PENDING_USER', or 'NOT_AUTHENTICATED'
+  // router.options(
+  //   '/verify',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
+  // router.get('/verify', cors<express.Request>(corsConfig), async (req, res) => {
+  //   // return 'AUTHENTICATED', 'PENDING_USER', or 'NOT_AUTHENTICATED'
 
-    if (req.cookies?.auth || req.headers['authorization']) {
-      res.status(200).json({ authStatus: 'AUTHENTICATED' })
-    } else if (req.cookies?.pendingUserAuth || req.headers['pendingUserAuth']) {
-      res.status(200).json({ authStatus: 'PENDING_USER' })
-    } else {
-      res.status(200).json({ authStatus: 'NOT_AUTHENTICATED' })
-    }
-  })
+  //   if (req.cookies?.auth || req.headers['authorization']) {
+  //     res.status(200).json({ authStatus: 'AUTHENTICATED' })
+  //   } else if (req.cookies?.pendingUserAuth || req.headers['pendingUserAuth']) {
+  //     res.status(200).json({ authStatus: 'PENDING_USER' })
+  //   } else {
+  //     res.status(200).json({ authStatus: 'NOT_AUTHENTICATED' })
+  //   }
+  // })
 
   // Remove code below this line once we update google auth to new version
 
-  router.get('/google-redirect/login', async (req, res) => {
-    let redirect_uri = ''
-    if (req.query.redirect_uri) {
-      redirect_uri = encodeURIComponent(req.query.redirect_uri as string)
-    }
-    const state = JSON.stringify({ redirect_uri })
-    res.redirect(
-      generateGoogleLoginURL(
-        googleAuth(),
-        `/api/auth/google-login/login`,
-        state
-      )
-    )
-  })
+  // router.get('/google-redirect/login', async (req, res) => {
+  //   let redirect_uri = ''
+  //   if (req.query.redirect_uri) {
+  //     redirect_uri = encodeURIComponent(req.query.redirect_uri as string)
+  //   }
+  //   const state = JSON.stringify({ redirect_uri })
+  //   res.redirect(
+  //     generateGoogleLoginURL(
+  //       googleAuth(),
+  //       `/api/auth/google-login/login`,
+  //       state
+  //     )
+  //   )
+  // })
 
-  router.get('/google-login/login', async (req, res) => {
-    const { code } = req.query
+  // router.get('/google-login/login', async (req, res) => {
+  //   const { code } = req.query
 
-    const userData = await validateGoogleUser(`${code}`)
+  //   const userData = await validateGoogleUser(`${code}`)
 
-    if (!userData || !userData.email || !userData.id) {
-      return { errorCodes: [SignupErrorCode.GoogleAuthError] }
-    }
+  //   if (!userData || !userData.email || !userData.id) {
+  //     return { errorCodes: [SignupErrorCode.GoogleAuthError] }
+  //   }
 
-    const user = await userRepository.findOneBy({ email: userData.email })
+  //   const user = await userRepository.findOneBy({ email: userData.email })
 
-    // eslint-disable-next @typescript-eslint/ban-ts-comment
-    const secret = (await signToken(
-      { email: userData.email },
-      env.server.jwtSecret,
-      // @ts-ignore
-      {
-        expiresIn: 300,
-      }
-    )) as string
+  //   // eslint-disable-next @typescript-eslint/ban-ts-comment
+  //   const secret = (await signToken(
+  //     { email: userData.email },
+  //     env.server.jwtSecret,
+  //     // @ts-ignore
+  //     {
+  //       expiresIn: 300,
+  //     }
+  //   )) as string
 
-    if (!user) {
-      return res.redirect(
-        `${env.client.url}/join?email=${userData.email}&name=${userData.name}&sourceUserId=${userData.id}&pictureUrl=${userData.picture}&secret=${secret}`
-      )
-    }
+  //   if (!user) {
+  //     return res.redirect(
+  //       `${env.client.url}/join?email=${userData.email}&name=${userData.name}&sourceUserId=${userData.id}&pictureUrl=${userData.picture}&secret=${secret}`
+  //     )
+  //   }
 
-    if (user.source !== RegistrationType.Google) {
-      const errorCodes = [LoginErrorCode.WrongSource]
-      return res.redirect(
-        `${env.client.url}/${
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (req.params as any)?.action
-        }?errorCodes=${errorCodes}`
-      )
-    }
+  //   if (user.source !== RegistrationType.Google) {
+  //     const errorCodes = [LoginErrorCode.WrongSource]
+  //     return res.redirect(
+  //       `${env.client.url}/${
+  //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //         (req.params as any)?.action
+  //       }?errorCodes=${errorCodes}`
+  //     )
+  //   }
 
-    const query = `
-    mutation googleLogin{
-      googleLogin(input: {
-        secret: "${secret}",
-        email: "${userData.email}",
-      }) {
-        __typename
-        ... on LoginError { errorCodes }
-        ... on LoginSuccess {
-          me {
-            id
-            name
-            profile {
-              pictureUrl
-            }
-          }
-        }
-      }
-    }`
+  //   const query = `
+  //   mutation googleLogin{
+  //     googleLogin(input: {
+  //       secret: "${secret}",
+  //       email: "${userData.email}",
+  //     }) {
+  //       __typename
+  //       ... on LoginError { errorCodes }
+  //       ... on LoginSuccess {
+  //         me {
+  //           id
+  //           name
+  //           profile {
+  //             pictureUrl
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }`
 
-    const result = await axios.post(env.server.gateway_url + '/graphql', {
-      query,
-    })
-    const { data } = result.data
+  //   const result = await axios.post(env.server.gateway_url + '/graphql', {
+  //     query,
+  //   })
+  //   const { data } = result.data
 
-    if (data.googleLogin.__typename === 'LoginError') {
-      if (data.googleLogin.errorCodes.includes(LoginErrorCode.UserNotFound)) {
-        return res.redirect(`${env.client.url}/login`)
-      }
+  //   if (data.googleLogin.__typename === 'LoginError') {
+  //     if (data.googleLogin.errorCodes.includes(LoginErrorCode.UserNotFound)) {
+  //       return res.redirect(`${env.client.url}/login`)
+  //     }
 
-      const errorCodes = data.googleLogin.errorCodes.join(',')
-      return res.redirect(
-        `${env.client.url}/${
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (req.params as any)?.action
-        }?errorCodes=${errorCodes}`
-      )
-    }
+  //     const errorCodes = data.googleLogin.errorCodes.join(',')
+  //     return res.redirect(
+  //       `${env.client.url}/${
+  //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //         (req.params as any)?.action
+  //       }?errorCodes=${errorCodes}`
+  //     )
+  //   }
 
-    if (!result.headers['set-cookie']) {
-      return res.redirect(
-        `${env.client.url}/${
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (req.params as any)?.action
-        }?errorCodes=unknown`
-      )
-    }
+    // if (!result.headers['set-cookie']) {
+    //   return res.redirect(
+    //     `${env.client.url}/${
+    //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //       (req.params as any)?.action
+    //     }?errorCodes=unknown`
+    //   )
+    // }
 
-    analytics.capture({
-      distinctId: user.id,
-      event: 'login',
-      properties: {
-        method: 'google',
-        email: user.email,
-        username: user.profile.username,
-        env: env.server.apiEnv,
-      },
-    })
+  //   analytics.capture({
+  //     distinctId: user.id,
+  //     event: 'login',
+  //     properties: {
+  //       method: 'google',
+  //       email: user.email,
+  //       username: user.profile.username,
+  //       env: env.server.apiEnv,
+  //     },
+  //   })
 
-    res.setHeader('set-cookie', result.headers['set-cookie'])
+  //   res.setHeader('set-cookie', result.headers['set-cookie'])
 
-    await handleSuccessfulLogin(req, res, user, data.googleLogin.newUser)
-  })
+  //   await handleSuccessfulLogin(req, res, user, data.googleLogin.newUser)
+  // })
 
   async function handleSuccessfulLogin(
     req: express.Request,
@@ -501,287 +501,287 @@ export function authRouter() {
     }
   )
 
-  router.options(
-    '/email-signup',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
+  // router.options(
+  //   '/email-signup',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
 
-  router.post(
-    '/email-signup',
-    hourlyLimiter,
-    cors<express.Request>(corsConfig),
-    async (req: express.Request, res: express.Response) => {
-      if (!isValidSignupRequest(req.body)) {
-        return res.redirect(
-          `${env.client.url}/auth/email-signup?errorCodes=INVALID_CREDENTIALS`
-        )
-      }
-      const {
-        email,
-        password,
-        name,
-        username,
-        bio,
-        pictureUrl,
-        recaptchaToken,
-      } = req.body
+  // router.post(
+  //   '/email-signup',
+  //   hourlyLimiter,
+  //   cors<express.Request>(corsConfig),
+  //   async (req: express.Request, res: express.Response) => {
+  //     if (!isValidSignupRequest(req.body)) {
+  //       return res.redirect(
+  //         `${env.client.url}/auth/email-signup?errorCodes=INVALID_CREDENTIALS`
+  //       )
+  //     }
+  //     const {
+  //       email,
+  //       password,
+  //       name,
+  //       username,
+  //       bio,
+  //       pictureUrl,
+  //       recaptchaToken,
+  //     } = req.body
 
-      if (process.env.RECAPTCHA_CHALLENGE_SECRET_KEY) {
-        const verified =
-          recaptchaToken && (await verifyChallengeRecaptcha(recaptchaToken))
-        if (!verified) {
-          logger.info('recaptcha failed', { recaptchaToken, verified })
-          return res.redirect(
-            `${env.client.url}/auth/email-signup?errorCodes=UNKNOWN`
-          )
-        }
-      }
+  //     if (process.env.RECAPTCHA_CHALLENGE_SECRET_KEY) {
+  //       const verified =
+  //         recaptchaToken && (await verifyChallengeRecaptcha(recaptchaToken))
+  //       if (!verified) {
+  //         logger.info('recaptcha failed', { recaptchaToken, verified })
+  //         return res.redirect(
+  //           `${env.client.url}/auth/email-signup?errorCodes=UNKNOWN`
+  //         )
+  //       }
+  //     }
 
-      // trim whitespace in email address
-      const trimmedEmail = email.trim()
-      try {
-        // hash password
-        const hashedPassword = await hashPassword(password)
-        await createUser({
-          email: trimmedEmail,
-          provider: 'EMAIL',
-          sourceUserId: trimmedEmail,
-          name: name.trim(),
-          username: username.trim().toLowerCase(), // lowercase username
-          pictureUrl,
-          bio,
-          password: hashedPassword,
-          pendingConfirmation: true,
-        })
+  //     // trim whitespace in email address
+  //     const trimmedEmail = email.trim()
+  //     try {
+  //       // hash password
+  //       const hashedPassword = await hashPassword(password)
+  //       await createUser({
+  //         email: trimmedEmail,
+  //         provider: 'EMAIL',
+  //         sourceUserId: trimmedEmail,
+  //         name: name.trim(),
+  //         username: username.trim().toLowerCase(), // lowercase username
+  //         pictureUrl,
+  //         bio,
+  //         password: hashedPassword,
+  //         pendingConfirmation: true,
+  //       })
 
-        res.redirect(
-          `${env.client.url}/auth/verify-email?message=SIGNUP_SUCCESS`
-        )
-      } catch (e) {
-        logger.info('email-signup exception:', e)
-        if (isErrorWithCode(e)) {
-          return res.redirect(
-            `${env.client.url}/auth/email-signup?errorCodes=${e.errorCode}`
-          )
-        }
-        res.redirect(`${env.client.url}/auth/email-signup?errorCodes=UNKNOWN`)
-      }
-    }
-  )
+  //       res.redirect(
+  //         `${env.client.url}/auth/verify-email?message=SIGNUP_SUCCESS`
+  //       )
+  //     } catch (e) {
+  //       logger.info('email-signup exception:', e)
+  //       if (isErrorWithCode(e)) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/email-signup?errorCodes=${e.errorCode}`
+  //         )
+  //       }
+  //       res.redirect(`${env.client.url}/auth/email-signup?errorCodes=UNKNOWN`)
+  //     }
+  //   }
+  // )
 
-  router.options(
-    '/confirm-email',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
+  // router.options(
+  //   '/confirm-email',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
 
-  router.post(
-    '/confirm-email',
-    cors<express.Request>(corsConfig),
-    async (req: express.Request, res: express.Response) => {
-      const token = req.body.token
+  // router.post(
+  //   '/confirm-email',
+  //   cors<express.Request>(corsConfig),
+  //   async (req: express.Request, res: express.Response) => {
+  //     const token = req.body.token
 
-      try {
-        // verify token
-        const claims = await getClaimsByToken(token)
-        if (!claims) {
-          return res.redirect(
-            `${env.client.url}/auth/confirm-email?errorCodes=INVALID_TOKEN`
-          )
-        }
+  //     try {
+  //       // verify token
+  //       const claims = await getClaimsByToken(token)
+  //       if (!claims) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/confirm-email?errorCodes=INVALID_TOKEN`
+  //         )
+  //       }
 
-        const user = await getRepository(User).findOneBy({ id: claims.uid })
-        if (!user) {
-          return res.redirect(
-            `${env.client.url}/auth/confirm-email?errorCodes=USER_NOT_FOUND`
-          )
-        }
+  //       const user = await getRepository(User).findOneBy({ id: claims.uid })
+  //       if (!user) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/confirm-email?errorCodes=USER_NOT_FOUND`
+  //         )
+  //       }
 
-        if (user.status === StatusType.Pending) {
-          const updated = await appDataSource.transaction(
-            async (entityManager) => {
-              await setClaims(entityManager, user.id)
-              return entityManager
-                .getRepository(User)
-                .update({ id: user.id }, { status: StatusType.Active })
-            }
-          )
+  //       if (user.status === StatusType.Pending) {
+  //         const updated = await appDataSource.transaction(
+  //           async (entityManager) => {
+  //             await setClaims(entityManager, user.id)
+  //             return entityManager
+  //               .getRepository(User)
+  //               .update({ id: user.id }, { status: StatusType.Active })
+  //           }
+  //         )
 
-          if (!updated.affected) {
-            return res.redirect(
-              `${env.client.url}/auth/confirm-email?errorCodes=UNKNOWN`
-            )
-          }
-        }
+  //         if (!updated.affected) {
+  //           return res.redirect(
+  //             `${env.client.url}/auth/confirm-email?errorCodes=UNKNOWN`
+  //           )
+  //         }
+  //       }
 
-        analytics.capture({
-          distinctId: user.id,
-          event: 'login',
-          properties: {
-            method: 'email_verification',
-            email: user.email,
-            username: user.profile.username,
-            env: env.server.apiEnv,
-          },
-        })
+  //       analytics.capture({
+  //         distinctId: user.id,
+  //         event: 'login',
+  //         properties: {
+  //           method: 'email_verification',
+  //           email: user.email,
+  //           username: user.profile.username,
+  //           env: env.server.apiEnv,
+  //         },
+  //       })
 
-        res.set('Message', 'EMAIL_CONFIRMED')
-        await handleSuccessfulLogin(req, res, user, false)
-      } catch (e) {
-        logger.info('confirm-email exception:', e)
-        if (e instanceof jwt.TokenExpiredError) {
-          return res.redirect(
-            `${env.client.url}/auth/confirm-email?errorCodes=TOKEN_EXPIRED`
-          )
-        }
+  //       res.set('Message', 'EMAIL_CONFIRMED')
+  //       await handleSuccessfulLogin(req, res, user, false)
+  //     } catch (e) {
+  //       logger.info('confirm-email exception:', e)
+  //       if (e instanceof jwt.TokenExpiredError) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/confirm-email?errorCodes=TOKEN_EXPIRED`
+  //         )
+  //       }
 
-        res.redirect(
-          `${env.client.url}/auth/confirm-email?errorCodes=INVALID_TOKEN`
-        )
-      }
-    }
-  )
+  //       res.redirect(
+  //         `${env.client.url}/auth/confirm-email?errorCodes=INVALID_TOKEN`
+  //       )
+  //     }
+  //   }
+  // )
 
-  router.options(
-    '/forgot-password',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
+  // router.options(
+  //   '/forgot-password',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
 
-  router.post(
-    '/forgot-password',
-    hourlyLimiter,
-    cors<express.Request>(corsConfig),
-    async (req: express.Request, res: express.Response) => {
-      const email = req.body.email?.trim() as string // trim whitespace
-      if (!email) {
-        return res.redirect(
-          `${env.client.url}/auth/forgot-password?errorCodes=INVALID_EMAIL`
-        )
-      }
+  // router.post(
+  //   '/forgot-password',
+  //   hourlyLimiter,
+  //   cors<express.Request>(corsConfig),
+  //   async (req: express.Request, res: express.Response) => {
+  //     const email = req.body.email?.trim() as string // trim whitespace
+  //     if (!email) {
+  //       return res.redirect(
+  //         `${env.client.url}/auth/forgot-password?errorCodes=INVALID_EMAIL`
+  //       )
+  //     }
 
-      const captchaToken = req.body.recaptchaToken as string
-      if (process.env.RECAPTCHA_CHALLENGE_SECRET_KEY) {
-        const verified = await verifyChallengeRecaptcha(captchaToken)
-        if (!verified) {
-          logger.info('recaptcha failed', { captchaToken, verified })
-          return res.redirect(
-            `${env.client.url}/auth/forgot-password?errorCodes=UNKNOWN`
-          )
-        }
-      }
+  //     const captchaToken = req.body.recaptchaToken as string
+  //     if (process.env.RECAPTCHA_CHALLENGE_SECRET_KEY) {
+  //       const verified = await verifyChallengeRecaptcha(captchaToken)
+  //       if (!verified) {
+  //         logger.info('recaptcha failed', { captchaToken, verified })
+  //         return res.redirect(
+  //           `${env.client.url}/auth/forgot-password?errorCodes=UNKNOWN`
+  //         )
+  //       }
+  //     }
 
-      try {
-        const user = await userRepository.findByEmail(email)
-        if (!user || user.status === StatusType.Deleted) {
-          return res.redirect(`${env.client.url}/auth/reset-sent`)
-        }
+  //     try {
+  //       const user = await userRepository.findByEmail(email)
+  //       if (!user || user.status === StatusType.Deleted) {
+  //         return res.redirect(`${env.client.url}/auth/reset-sent`)
+  //       }
 
-        if (user.status === StatusType.Pending) {
-          return res.redirect(`${env.client.url}/auth/reset-sent`)
-        }
+  //       if (user.status === StatusType.Pending) {
+  //         return res.redirect(`${env.client.url}/auth/reset-sent`)
+  //       }
 
-        if (!(await sendPasswordResetEmail(user))) {
-          return res.redirect(
-            `${env.client.url}/auth/forgot-password?errorCodes=INVALID_EMAIL`
-          )
-        }
+  //       if (!(await sendPasswordResetEmail(user))) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/forgot-password?errorCodes=INVALID_EMAIL`
+  //         )
+  //       }
 
-        res.clearCookie('auth')
-        res.clearCookie('pendingUserAuth')
-        res.redirect(`${env.client.url}/auth/reset-sent`)
-      } catch (e) {
-        logger.info('forgot-password exception:', e)
+  //       res.clearCookie('auth')
+  //       res.clearCookie('pendingUserAuth')
+  //       res.redirect(`${env.client.url}/auth/reset-sent`)
+  //     } catch (e) {
+  //       logger.info('forgot-password exception:', e)
 
-        res.redirect(
-          `${env.client.url}/auth/forgot-password?errorCodes=UNKNOWN`
-        )
-      }
-    }
-  )
+  //       res.redirect(
+  //         `${env.client.url}/auth/forgot-password?errorCodes=UNKNOWN`
+  //       )
+  //     }
+  //   }
+  // )
 
-  router.options(
-    '/reset-password',
-    cors<express.Request>({ ...corsConfig, maxAge: 600 })
-  )
+  // router.options(
+  //   '/reset-password',
+  //   cors<express.Request>({ ...corsConfig, maxAge: 600 })
+  // )
 
-  router.post(
-    '/reset-password',
-    cors<express.Request>(corsConfig),
-    async (req: express.Request, res: express.Response) => {
-      const { token, password } = req.body
+  // router.post(
+  //   '/reset-password',
+  //   cors<express.Request>(corsConfig),
+  //   async (req: express.Request, res: express.Response) => {
+  //     const { token, password } = req.body
 
-      try {
-        // verify token
-        const claims = await getClaimsByToken(token)
-        if (!claims) {
-          return res.redirect(
-            `${env.client.url}/auth/reset-password/${token}?errorCodes=INVALID_TOKEN`
-          )
-        }
+  //     try {
+  //       // verify token
+  //       const claims = await getClaimsByToken(token)
+  //       if (!claims) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/reset-password/${token}?errorCodes=INVALID_TOKEN`
+  //         )
+  //       }
 
-        if (!password || password.length < 8) {
-          return res.redirect(
-            `${env.client.url}/auth/reset-password/${token}?errorCodes=INVALID_PASSWORD`
-          )
-        }
+  //       if (!password || password.length < 8) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/reset-password/${token}?errorCodes=INVALID_PASSWORD`
+  //         )
+  //       }
 
-        const user = await getRepository(User).findOneBy({
-          id: claims.uid,
-        })
-        if (!user) {
-          return res.redirect(
-            `${env.client.url}/auth/reset-password/${token}?errorCodes=USER_NOT_FOUND`
-          )
-        }
+  //       const user = await getRepository(User).findOneBy({
+  //         id: claims.uid,
+  //       })
+  //       if (!user) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/reset-password/${token}?errorCodes=USER_NOT_FOUND`
+  //         )
+  //       }
 
-        if (user.status === StatusType.Pending) {
-          return res.redirect(
-            `${env.client.url}/auth/email-login?errorCodes=PENDING_VERIFICATION`
-          )
-        }
+  //       if (user.status === StatusType.Pending) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/email-login?errorCodes=PENDING_VERIFICATION`
+  //         )
+  //       }
 
-        const hashedPassword = await hashPassword(password)
-        const updated = await appDataSource.transaction(
-          async (entityManager) => {
-            await setClaims(entityManager, user.id)
-            return entityManager.getRepository(User).update(user.id, {
-              password: hashedPassword,
-              email: claims.email ?? undefined, // update email address if it was provided
-              source: RegistrationType.Email, // reset password will always be email
-            })
-          }
-        )
-        if (!updated.affected) {
-          return res.redirect(
-            `${env.client.url}/auth/reset-password/${token}?errorCodes=UNKNOWN`
-          )
-        }
+  //       const hashedPassword = await hashPassword(password)
+  //       const updated = await appDataSource.transaction(
+  //         async (entityManager) => {
+  //           await setClaims(entityManager, user.id)
+  //           return entityManager.getRepository(User).update(user.id, {
+  //             password: hashedPassword,
+  //             email: claims.email ?? undefined, // update email address if it was provided
+  //             source: RegistrationType.Email, // reset password will always be email
+  //           })
+  //         }
+  //       )
+  //       if (!updated.affected) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/reset-password/${token}?errorCodes=UNKNOWN`
+  //         )
+  //       }
 
-        analytics.capture({
-          distinctId: user.id,
-          event: 'login',
-          properties: {
-            method: 'password_reset',
-            email: user.email,
-            username: user.profile.username,
-            env: env.server.apiEnv,
-          },
-        })
+  //       analytics.capture({
+  //         distinctId: user.id,
+  //         event: 'login',
+  //         properties: {
+  //           method: 'password_reset',
+  //           email: user.email,
+  //           username: user.profile.username,
+  //           env: env.server.apiEnv,
+  //         },
+  //       })
 
-        await handleSuccessfulLogin(req, res, user, false)
-      } catch (e) {
-        logger.info('reset-password exception:', e)
-        if (e instanceof jwt.TokenExpiredError) {
-          return res.redirect(
-            `${env.client.url}/auth/reset-password/?errorCodes=TOKEN_EXPIRED`
-          )
-        }
+  //       await handleSuccessfulLogin(req, res, user, false)
+  //     } catch (e) {
+  //       logger.info('reset-password exception:', e)
+  //       if (e instanceof jwt.TokenExpiredError) {
+  //         return res.redirect(
+  //           `${env.client.url}/auth/reset-password/?errorCodes=TOKEN_EXPIRED`
+  //         )
+  //       }
 
-        res.redirect(
-          `${env.client.url}/auth/reset-password/?errorCodes=INVALID_TOKEN`
-        )
-      }
-    }
-  )
+  //       res.redirect(
+  //         `${env.client.url}/auth/reset-password/?errorCodes=INVALID_TOKEN`
+  //       )
+  //     }
+  //   }
+  // )
 
   return router
 }

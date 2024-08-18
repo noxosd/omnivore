@@ -69,7 +69,7 @@ export function LoginForm(props: LoginFormProps): JSX.Element {
       <SpanBox css={{ height: '24px' }} />
 
       <VStack alignment="start" distribution="center">
-        {googleID && (
+        {/* {googleID && (
           <Box
             style={{
               cursor: 'pointer',
@@ -79,11 +79,11 @@ export function LoginForm(props: LoginFormProps): JSX.Element {
           >
             <GoogleAuthButton />
           </Box>
-        )}
+        )} */}
 
         <Box style={{ height: '16px' }}></Box>
 
-        {appleAuthRedirectURI && (
+        {/* {appleAuthRedirectURI && (
           <Box
             style={{
               cursor: 'pointer',
@@ -101,7 +101,7 @@ export function LoginForm(props: LoginFormProps): JSX.Element {
               responseType="code id_token"
             />
           </Box>
-        )}
+        )} */}
         <Link href="/auth/email-login" passHref legacyBehavior>
           <StyledTextSpan
             style="actionLink"

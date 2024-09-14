@@ -10,7 +10,7 @@ COPY /packages/db/package.json ./packages/db/package.json
 
 RUN apt-get update && apt-get install -y \
   postgresql \
-  uuid-runtime
+  uuid-runtime apache2-utils
 
 RUN yarn install
 

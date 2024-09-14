@@ -1,13 +1,13 @@
-FROM node:14.18-alpine
+FROM node:18.16-alpine
 
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
+# COPY package.json .
+# COPY yarn.lock .
+COPY pkg/admin/ /app
 
 RUN yarn install --frozen-lockfile
 
-COPY . .
 RUN NODE_ENV=production yarn build
 
 ENV PORT=8080

@@ -69,6 +69,8 @@ services:
       - PG_HOST=postgres
       - PG_PASSWORD=app_pass
       - PG_DB=omnivore
+      - EMAIL=demo@example.com
+      - NAME=demo
     depends_on:
       postgres:
         condition: service_healthy
@@ -101,6 +103,10 @@ services:
       - CONTENT_FETCH_URL=http://content-fetch:8080/?token=some_token
       - REDIS_URL=redis://redis:6379
       - MQ_REDIS_URL=redis://redis:6379
+      - USER_EMAIL=demo@example.com
+      - USER_NAME=demo
+      - MINIO_ACCESS_KEY=ROOTNAME
+      - MINIO_SECRET_KEY=CHANGEME123
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -135,6 +141,8 @@ services:
       - CONTENT_FETCH_URL=http://content-fetch:8080/?token=some_token
       - REDIS_URL=redis://redis:6379
       - MQ_REDIS_URL=redis://redis:6379
+      - MINIO_ACCESS_KEY=ROOTNAME
+      - MINIO_SECRET_KEY=CHANGEME123
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -175,6 +183,8 @@ services:
       - REST_BACKEND_ENDPOINT=http://api:8080/api
       - REDIS_URL=redis://redis:6379
       - MQ_REDIS_URL=redis://redis:6379
+      - MINIO_ACCESS_KEY=ROOTNAME
+      - MINIO_SECRET_KEY=CHANGEME123
     depends_on:
       redis:
         condition: service_healthy
@@ -201,3 +211,19 @@ services:
       environment:
         - MINIO_ROOT_USER=ROOTNAME
         - MINIO_ROOT_PASSWORD=CHANGEME123
+
+  # admin:
+  #     build:
+  #       context: .
+  #       dockerfile: ./pkg/admin/Dockerfile
+  #     container_name: "omnivore-admin"
+  #     ports:
+  #       - 8888:8080
+  #     environment:
+  #     - PG_HOST=postgres
+  #     - PG_USER=postgres
+  #     - PG_PASSWORD=postgres
+  #     - PG_DB=omnivore
+  #     - PG_PORT=5432
+  #     - PG_POOL_MAX=20
+  #     - ADMIN_USER_EMAIL=demo@exampl.com

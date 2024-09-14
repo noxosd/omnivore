@@ -20,7 +20,9 @@ echo "granted omnivore_user to app_user"
 # create demo user with email: demo@omnivore.app, password: demo_password
 if [ -z "${NO_DEMO_USER}" ]; then
     USER_ID=$(uuidgen)
-    PASSWORD='$2a$10$41G6b1BDUdxNjH1QFPJYDOM29EE0C9nTdjD1FoseuQ8vZU1NWtrh6'
-    psql --host $PG_HOST --username $POSTGRES_USER --dbname $PG_DB --command "INSERT INTO omnivore.user (id, source, email, source_user_id, name, password) VALUES ('$USER_ID', 'EMAIL', 'demo@omnivore.app', 'demo@omnivore.app', 'Demo User', '$PASSWORD'); INSERT INTO omnivore.user_profile (user_id, username) VALUES ('$USER_ID', 'demo_user');"
-    echo "created demo user with email: demo@omnivore.app, password: demo_password"
+    
+    new_password=$(LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()-_+=' < /dev/urandom | head -c 12)
+    PASSWORD=$(htpasswd -bnBC 10 "" $new_password | tr -d ':\n')
+    psql --host $PG_HOST --username $POSTGRES_USER --dbname $PG_DB --command "INSERT INTO omnivore.user (id, source, email, source_user_id, name, password) VALUES ('$USER_ID', 'EMAIL', '$EMAIL', '$EMAIL', '$NAME', '$PASSWORD'); INSERT INTO omnivore.user_profile (user_id, username) VALUES ('$USER_ID', 'demo_user');"
+    echo "created user with email: $EMAIL, password: $new_password"
 fi

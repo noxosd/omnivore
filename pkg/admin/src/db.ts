@@ -13,10 +13,10 @@ import {
 import AdminJs from 'adminjs'
 import { Database, Resource } from '@adminjs/typeorm'
 
-export const registerDatabase = async (secrets: any): Promise<Connection> => {
+export const registerDatabase = async (): Promise<Connection> => {
   AdminJs.registerAdapter({ Database, Resource })
 
-  let host = 'localhost'
+  let host = process.env.PG_HOST
   if (process.env.K_SERVICE) {
     console.log(
       'connecting to database via Cloud Run connection',
@@ -28,18 +28,18 @@ export const registerDatabase = async (secrets: any): Promise<Connection> => {
 
   console.log('connecting to database:', {
     type: 'postgres',
-    host: host,
+    host: process.env.PG_HOST,
     schema: 'omnivore',
-    database: secrets.DB_DATABASE,
+    database: process.env.PG_DB,
   })
 
   const connection = await createConnection({
     type: 'postgres',
-    host: host,
+    host: process.env.PG_HOST,
     schema: 'omnivore',
-    username: secrets.DB_USER,
-    password: secrets.DB_PASS,
-    database: secrets.DB_DATABASE,
+    username: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DB,
     entities: [
       AdminUser,
       User,

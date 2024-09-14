@@ -18,6 +18,7 @@ import {
   EmailAddress,
   Rule,
 } from './db'
+import { generateRandomPassword } from './utils'
 import { compare, hashSync } from 'bcryptjs'
 const readYamlFile = require('read-yaml-file')
 
@@ -25,10 +26,12 @@ const app = express()
 const port = process.env.PORT || '8000'
 const ADMIN_USER_EMAIL =
   process.env.ADMIN_USER_EMAIL || 'admin-user@omnivore.app'
+const ADMIN_USER_PASSWORD = generateRandomPassword(20)
+console.log("Generated admin password: ", ADMIN_USER_PASSWORD);
 
-;(async () => {
-  const secrets = await readYamlFile(process.env.SECRETS_FILE)
-  const db = await registerDatabase(secrets)
+(async () => {
+  // const secrets = await readYamlFile(process.env.SECRETS_FILE)
+  const db = await registerDatabase()
 
   const adminBro = new AdminJs({
     databases: [db],
@@ -70,19 +73,18 @@ const ADMIN_USER_EMAIL =
         // from the environment variables. This is only done
         // once, and then the admin user should create a user
         // for each user.
-        if (!secrets.ADMIN_USER_PASSWORD) {
-          throw new Error('ADMIN_USER_PASSWORD is not set')
-        }
+        // if (!secrets.ADMIN_USER_PASSWORD) {
+        //   // throw new Error('ADMIN_USER_PASSWORD is not set')
+
+        // }
         return AdminUser.create({
           email: ADMIN_USER_EMAIL,
-          password: hashSync(secrets.ADMIN_USER_PASSWORD, 10),
+          password: hashSync(ADMIN_USER_PASSWORD, 10),
         })
       }
       return false
     },
-    cookiePassword:
-      secrets.ADMIN_USER_PASSWORD ||
-      'some-secret-password-used-to-secure-cookie',
+    cookiePassword: ADMIN_USER_PASSWORD,
   })
 
   app.use(adminBro.options.rootPath, router)
